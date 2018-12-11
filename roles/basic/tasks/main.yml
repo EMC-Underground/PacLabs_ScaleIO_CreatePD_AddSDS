@@ -1,0 +1,50 @@
+- name: "Get ScaleIO token for Auth"
+  uri:
+    url: https://10.237.198.170/api/login 
+    return_content: yes
+    user: admin
+    password: "Password#1"
+    force_basic_auth: yes
+    validate_certs: False
+    status_code:
+      - 200
+      - 201
+      - 202
+  register: msg
+- debug:
+    var: msg.json
+
+- name: "Query Protection ID to pass to Create Device"
+  uri:
+    url: https://10.237.198.170/api/types/ProtectionDomain/instances/action/queryIdByKey
+    method: POST
+    user: admin
+    password: "{{ msg.json }}"
+    body: { "name": "pd1"}
+    force_basic_auth: yes
+    body_format: json
+    validate_certs: False
+    status_code:
+      - 200
+      - 201
+      - 202
+  register: protection_domain_id
+- debug:
+    var: protection_domain_id.json
+
+
+- name: "Add SDS Server to ProtectionDomain PD1"
+  uri:
+    url: https://10.237.198.170/api/types/Sds/instances 
+    method: POST
+    user: admin
+    password: "{{ msg.json }}"
+    body: {"protectionDomainId": "{{ protection_domain_id.json }}", "sdsIpList": [{"SdsIp": {"ip": "192.168.10.203", "role": "all"}}],"name": "terraform-SIOSVM3"}
+    force_basic_auth: yes
+    body_format: json
+    validate_certs: False
+    status_code:
+      - 200
+      - 201
+      - 202
+    ignore_errors: yes
