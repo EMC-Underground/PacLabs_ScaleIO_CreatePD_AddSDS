@@ -1,1 +1,5 @@
 SIO_Packages
+/.blackbox/pubring.gpg~
+/.blackbox/pubring.kbx~
+/.blackbox/secring.gpg
+/roles/all/vars/vars.yml
