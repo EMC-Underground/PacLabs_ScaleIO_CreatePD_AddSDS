@@ -1,5 +1,8 @@
 ---
 - hosts: all
+  gather_facts: false
+  vars_files:
+    - roles/all/vars/vars.yml
   become: true
   roles:
   - basic

@@ -1,9 +1,9 @@
 - name: "Get ScaleIO token for Auth"
   uri:
-    url: https://10.237.198.170/api/login 
+    url: https://{{ vxflex_gateway_ip }}/api/login
     return_content: yes
-    user: admin
-    password: "Password#1"
+    user: "{{ vxflex_gateway_username }}"
+    password: "{{ vxflex_gateway_pw }}"
     force_basic_auth: yes
     validate_certs: False
     status_code:
@@ -16,11 +16,11 @@
 
 - name: "Query Protection ID to pass to Create Device"
   uri:
-    url: https://10.237.198.170/api/types/ProtectionDomain/instances/action/queryIdByKey
+    url: https://{{ vxflex_gateway_ip }}/api/types/ProtectionDomain/instances/action/queryIdByKey
     method: POST
-    user: admin
+    user: "{{ vxflex_gateway_username }}"
     password: "{{ msg.json }}"
-    body: { "name": "pd1"}
+    body: { "name": "{{ vxflex_protection_domain_name }}"}
     force_basic_auth: yes
     body_format: json
     validate_certs: False
@@ -35,11 +35,11 @@
 
 - name: "Add SDS Server to ProtectionDomain PD1"
   uri:
-    url: https://10.237.198.170/api/types/Sds/instances 
+    url: https://{{ vxflex_gateway_ip }}/api/types/Sds/instances
     method: POST
-    user: admin
+    user: "{{ vxflex_gateway_username }}"
     password: "{{ msg.json }}"
-    body: {"protectionDomainId": "{{ protection_domain_id.json }}", "sdsIpList": [{"SdsIp": {"ip": "192.168.10.203", "role": "all"}}],"name": "terraform-SIOSVM3"}
+    body: {"protectionDomainId": "{{ protection_domain_id.json }}", "sdsIpList": [{"SdsIp": {"ip":["{{ vxflex_mdm_ip }}"], "role": "all"}}],"name": "{{ vxflex_master_mdm_name }}"}
     force_basic_auth: yes
     body_format: json
     validate_certs: False
@@ -47,4 +47,3 @@
       - 200
       - 201
       - 202
-    ignore_errors: yes
