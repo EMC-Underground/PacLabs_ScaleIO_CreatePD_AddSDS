@@ -11,8 +11,6 @@
       - 201
       - 202
   register: msg
-- debug:
-    var: msg.json
 
 - name: "Query Protection ID to pass to Create Device"
   uri:
@@ -29,9 +27,24 @@
       - 201
       - 202
   register: protection_domain_id
-- debug:
-    var: protection_domain_id.json
 
+- name: "Find MDM Ip's"
+  set_fact:
+    mdm_ip: "{{ ansible_facts['all_ipv4_addresses'] | ipaddr( vxflex_mdm_cidr ) }}"
+
+- name: "Create sdsIp's"
+  set_fact:
+    sdsIps: "{{ {'SdsIp': {'ip':item, 'role':'all'}} }}"
+  register: sds_Ips
+  with_items: "{{ mdm_ip }}"
+
+- name: "Create sdsIpList"
+  set_fact:
+    sdsIpList: "{{ sds_Ips.results | map(attribute='ansible_facts.sdsIps') | list }}"
+
+- name: "Create main payload"
+  set_fact:
+    body: "{{ body | combine( {'protectionDomainId': protection_domain_id.json,'name': ansible_facts['nodename'],'sdsIpList': sdsIpList} ) }}"
 
 - name: "Add SDS Server to ProtectionDomain PD1"
   uri:
@@ -39,7 +52,7 @@
     method: POST
     user: "{{ vxflex_gateway_username }}"
     password: "{{ msg.json }}"
-    body: {"protectionDomainId": "{{ protection_domain_id.json }}", "sdsIpList": [{"SdsIp": {"ip":["{{ vxflex_mdm_ip }}"], "role": "all"}}],"name": "{{ vxflex_master_mdm_name }}"}
+    body: "{{body}}"
     force_basic_auth: yes
     body_format: json
     validate_certs: False

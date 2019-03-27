@@ -1,8 +1,10 @@
 ---
 - hosts: all
-  gather_facts: false
+  vars:
+    body: {}
+    sdsIpList: []
   vars_files:
-    - roles/all/vars/vars.yml
+    - vars.yml
   become: true
   roles:
     - all
