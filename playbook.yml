@@ -5,4 +5,4 @@
     - roles/all/vars/vars.yml
   become: true
   roles:
-  - basic
+    - all
