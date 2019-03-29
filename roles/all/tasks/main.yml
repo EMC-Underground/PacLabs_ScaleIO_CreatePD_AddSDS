@@ -1,6 +1,6 @@
 - name: "Get ScaleIO token for Auth"
   uri:
-    url: https://{{ vxflex_gateway_ip }}/api/login
+    url: https://{{ vxflex_gateway_ip }}:{{ vxflex_gateway_https_port }}/api/login
     return_content: yes
     user: "{{ vxflex_gateway_username }}"
     password: "{{ vxflex_gateway_pw }}"
@@ -14,7 +14,7 @@
 
 - name: "Query Protection ID to pass to Create Device"
   uri:
-    url: https://{{ vxflex_gateway_ip }}/api/types/ProtectionDomain/instances/action/queryIdByKey
+    url: https://{{ vxflex_gateway_ip }}:{{ vxflex_gateway_https_port }}/api/types/ProtectionDomain/instances/action/queryIdByKey
     method: POST
     user: "{{ vxflex_gateway_username }}"
     password: "{{ msg.json }}"
@@ -64,7 +64,7 @@
 
 - name: "Add SDS Server to ProtectionDomain PD1"
   uri:
-    url: https://{{ vxflex_gateway_ip }}/api/types/Sds/instances
+    url: https://{{ vxflex_gateway_ip }}:{{ vxflex_gateway_https_port }}/api/types/Sds/instances
     method: POST
     user: "{{ vxflex_gateway_username }}"
     password: "{{ msg.json }}"
