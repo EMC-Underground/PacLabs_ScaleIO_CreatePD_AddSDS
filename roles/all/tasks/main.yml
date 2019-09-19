@@ -53,6 +53,8 @@
     sdsIps: "{{ {'SdsIp': {'ip':item, 'role':'all'}} }}"
   register: sds_Ips
   with_items: "{{ mdm_ip }}"
+- debug:
+    var: sds_Ips
 
 - name: "Create sdsIpList"
   set_fact:
